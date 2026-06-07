@@ -20,8 +20,7 @@ RANDOM_STATE = 42
 np.random.seed(RANDOM_STATE)
 
 # ── Token de Banxico ──────────────────────────────────────────────────────────
-# IMPORTANTE: no subas este token a GitHub — agrégalo a .gitignore
-# o mejor aún usa una variable de entorno
+
 TOKEN_BANXICO = '753738904ddce34be4e03f24eb9fa0cb3581cb7520b1daaa2c05bcc0e48e7986'
 
 
@@ -52,7 +51,7 @@ class DataLoader:
     # 1. CARGAR DATASET BASE
     # ──────────────────────────────────────────────────────────────────────────
     def cargar_datos(self) -> pd.DataFrame:
-        """Carga el dataset limpio de comercio exterior."""
+        """Se carga el dataset limpio de comercio exterior."""
         self.df = pd.read_csv(self.ruta_datos, parse_dates=['PERIODO'])
         print(f'Dataset base cargado: {self.df.shape[0]:,} filas ✓')
         return self.df
@@ -107,7 +106,7 @@ class DataLoader:
     # ──────────────────────────────────────────────────────────────────────────
     def fusionar(self) -> pd.DataFrame:
         """
-        Fusiona el dataset de comercio exterior con el tipo de cambio
+        Fusionamos el dataset de comercio exterior con el tipo de cambio
         usando PERIODO como llave de unión (left join).
         """
         print('\n── Fusionando datasets...')
