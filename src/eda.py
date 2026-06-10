@@ -2,9 +2,6 @@
 eda.py
 Análisis Exploratorio de Datos — Comercio Exterior de México (1993–2025)
 Proyecto Final — Almacenes y Minería de Datos, Facultad de Ciencias UNAM
-
-Uso:
-    python src/eda.py
 """
 
 import pandas as pd

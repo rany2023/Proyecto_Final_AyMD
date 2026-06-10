@@ -3,9 +3,6 @@ data_loader.py
 Descarga y fusión del tipo de cambio MXN/USD desde la API de Banxico
 Comercio Exterior de México (1993–2025)
 Proyecto Final — Almacenes y Minería de Datos, Facultad de Ciencias UNAM
-
-Uso:
-    python src/data_loader.py
 """
 
 import pandas as pd

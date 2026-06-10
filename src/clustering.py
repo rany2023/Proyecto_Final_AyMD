@@ -3,9 +3,6 @@ clustering.py
 Agrupamiento no supervisado de socios comerciales de México — K-Means
 Comercio Exterior de México (1993–2025)
 Proyecto Final — Almacenes y Minería de Datos, Facultad de Ciencias UNAM
-
-Uso:
-    python src/clustering.py
 """
 
 import pandas as pd
@@ -64,7 +61,7 @@ class Clustering:
     # 1. CARGA
     # ──────────────────────────────────────────────────────────────────────────
     def cargar_datos(self) -> pd.DataFrame:
-        """Carga el dataset enriquecido."""
+        """Carga el dataset enriquecido (Tipo de cambio)."""
         self.df = pd.read_csv(self.ruta_datos, parse_dates=['PERIODO'])
         print(f'Dataset cargado: {self.df.shape[0]:,} filas × '
               f'{self.df.shape[1]} columnas ✓')

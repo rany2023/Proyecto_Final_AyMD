@@ -3,9 +3,6 @@ model_trainer.py
 Entrenamiento y evaluación del modelo supervisado — Random Forest
 Comercio Exterior de México (1993–2025)
 Proyecto Final — Almacenes y Minería de Datos, Facultad de Ciencias UNAM
-
-Uso:
-    python src/model_trainer.py
 """
 
 import pandas as pd

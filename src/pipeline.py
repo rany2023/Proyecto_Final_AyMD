@@ -13,10 +13,6 @@ bien definidas y dependientes entre sí:
     4. Preprocesamiento         (Preprocessor)
     5. Modelo supervisado       (ModelTrainer)
     6. Clustering               (Clustering)
-
-Uso:
-    python src/pipeline.py              # ejecutar todo
-    python src/pipeline.py --desde 4   # ejecutar desde etapa 4
 """
 
 import argparse
@@ -235,12 +231,11 @@ class Pipeline:
         return self.contexto
 
     # ──────────────────────────────────────────────────────────────────────────
-    # DEMOSTRACIÓN EN VIVO (para la presentación oral)
+    # DEMOSTRACIÓN por país
     # ──────────────────────────────────────────────────────────────────────────
     def demo_prediccion(self):
         """
         Carga el modelo guardado y hace una predicción nueva.
-        Para usar en la demostración en vivo del 10 de junio.
         """
         import joblib
         import pandas as pd

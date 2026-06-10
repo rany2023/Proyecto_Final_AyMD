@@ -3,9 +3,6 @@ demo_prediccion.py
 Demostración en vivo — Predicción por perfil de socio comercial
 Comercio Exterior de México (1993–2025)
 Proyecto Final — Almacenes y Minería de Datos, Facultad de Ciencias UNAM
-
-Uso:
-    python src/demo_prediccion.py
 """
 
 import joblib
@@ -24,7 +21,6 @@ def demo_prediccion():
     """
 
     print('\n' + '█' * 65)
-    print('  DEMOSTRACIÓN EN VIVO — Reutilización del modelo')
     print('  Predicción de balance comercial por perfil de socio')
     print('█' * 65)
 
