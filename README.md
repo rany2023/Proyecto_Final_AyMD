@@ -2,7 +2,7 @@
 ### Predicción del Balance Comercial y Segmentación de Socios Comerciales
 
 > Proyecto Final — Almacenes y Minería de Datos  
-> Facultad de Ciencias, UNAM — Junio 2025
+> Facultad de Ciencias, UNAM — Junio 2026
 
 ---
 
@@ -39,7 +39,7 @@ del Banco de México se desarrollan dos análisis principales:
 | **Fuente** | [datamx.io — Comercio Exterior de México por País 1993–2025](https://datamx.io/es/dataset/comercio-exterior-de-mexico-por-pais-1993-2025) |
 | **Origen** | Banco de México / Secretaría de Economía |
 | **Cobertura** | Enero 1993 – 2025 (mensual) |
-| **Registros** | ~138,000 filas |
+| **Registros** | 184,392 filas |
 | **Variables** | 8 columnas (PERIODO, CONTINENTE, ID_CONTINENTE, PAIS, ID_PAIS, FLUJO, ID_FLUJO, VALOR_USD) |
 | **Licencia** | Creative Commons CCZero (dominio público) |
 
@@ -64,7 +64,7 @@ Proyecto_Final_AyMD/
 
 ---
 
-## Instalación y ejecución
+## Instalación
 
 ### 1. Clonar el repositorio
 
@@ -76,20 +76,83 @@ cd Proyecto_Final_AyMD
 ### 2. Crear entorno virtual e instalar dependencias
 
 ```bash
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Descargar el dataset
+---
 
-Descargar el archivo CSV desde la fuente oficial y colocarlo en `data/`:
+## Orden de ejecución
 
+Ejecutar desde la **raíz del repositorio** con el entorno virtual activo:
+
+### Paso 1 — EDA: calidad de datos
+```bash
+PYTHONPATH=src python src/eda.py
 ```
-https://datamx.io/dataset/c6648e87-aa94-49ec-8439-56dd15e6edea/resource/b158871b-0b9f-4310-9f54-b01b308e3d40/download/data.csv
+Genera: `data/comercio_exterior_clean.csv` + gráficas en `reports/`
+
+### Paso 2 — Descargar tipo de cambio Banxico
+```bash
+PYTHONPATH=src python src/data_loader.py
+```
+Genera: `data/comercio_exterior_enriquecido.csv`
+
+### Paso 3 — EDA: visualizaciones
+```bash
+PYTHONPATH=src python src/eda_visualizaciones.py
+```
+Genera: histogramas, serie de tiempo, correlaciones en `reports/`
+
+### Paso 4 — Preprocesamiento
+```bash
+PYTHONPATH=src python src/preprocessor.py
+```
+Genera: `models/scaler.joblib`, `models/le_*.joblib`
+
+### Paso 5 — Modelo Random Forest
+```bash
+PYTHONPATH=src python src/model_trainer.py
+```
+Genera: `models/random_forest.joblib` + gráficas en `reports/`
+
+### Paso 6 — Modelo XGBoost
+```bash
+PYTHONPATH=src python src/model_trainer_xgboost.py
+```
+Genera: `models/xgboost.joblib` + gráficas comparativas
+
+### Paso 7 — Clustering K-Means
+```bash
+PYTHONPATH=src python src/clustering.py
+```
+Genera: `models/kmeans.joblib` + visualización PCA
+
+### Paso 8 — Diagrama UML
+```bash
+PYTHONPATH=src python src/generar_uml.py
+```
+Genera: `diagrams/uml_arquitectura.png`
+
+### Paso 9 — Demo en vivo (presentación)
+```bash
+PYTHONPATH=src python src/demo_prediccion.py
+```
+Predice balance comercial para los 3 clusters principales sin re-entrenar
+
+### Alternativa — Pipeline completo
+```bash
+# Ejecutar todo desde el inicio
+PYTHONPATH=src python src/pipeline.py
+
+# Ejecutar desde una etapa específica (ej: desde preprocesamiento)
+PYTHONPATH=src python src/pipeline.py --desde 4
 ```
 
-### 4. Ejecutar los notebooks
+---
+
+## Ejecutar los notebooks
 
 ```bash
 jupyter notebook notebooks/
@@ -97,18 +160,9 @@ jupyter notebook notebooks/
 
 Orden sugerido:
 1. `01_EDA.ipynb` — Análisis exploratorio de datos
-2. `02_modelo_supervisado.ipynb` — Entrenamiento y evaluación del modelo
-2. `02b_modelo_random_forest` — Entrenamiento y evaluación del modelo
-3. `03_clustering.ipynb` — Agrupamiento de socios comerciales
-
-### 5. Cargar el modelo entrenado
-
-```python
-import joblib
-
-modelo = joblib.load("models/modelo_final.joblib")
-prediccion = modelo.predict(nuevos_datos)
-```
+2. `02_modelo_supervisado.ipynb` — Entrenamiento y evaluación XGBoost
+3. `02b_modelo_random_forest.ipynb` — Entrenamiento y evaluación Random Forest
+4. `03_clustering.ipynb` — Agrupamiento de socios comerciales
 
 ---
 
@@ -128,6 +182,7 @@ prediccion = modelo.predict(nuevos_datos)
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4-orange)
+![XGBoost](https://img.shields.io/badge/XGBoost-2.0-red)
 ![pandas](https://img.shields.io/badge/pandas-2.2-150458)
 ![Quarto](https://img.shields.io/badge/Quarto-1.4-75AADB)
 
