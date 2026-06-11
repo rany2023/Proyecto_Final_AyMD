@@ -1,0 +1,37 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Análisis del Comercio Exterior de México"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Inicio
+      - href: dataset.qmd
+        text: Dataset
+      - href: eda.qmd
+        text: EDA
+      - href: supervisado.qmd
+        text: Modelo Supervisado
+      - href: clustering.qmd
+        text: Clustering
+      - href: arquitectura.qmd
+        text: Arquitectura
+      - href: conclusiones.qmd
+        text: Conclusiones
+    right:
+      - icon: github
+        href: https://github.com/rany2023/Proyecto_Final_AyMD
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    highlight-style: github
+    code-fold: true
+    code-tools: true
+    lang: es

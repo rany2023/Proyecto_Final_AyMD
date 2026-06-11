@@ -1,0 +1,331 @@
+[
+  {
+    "objectID": "dataset.html",
+    "href": "dataset.html",
+    "title": "Descripción del Dataset",
+    "section": "",
+    "text": "El dataset utilizado es el registro histórico de Comercio Exterior de México por País (1993–2025), disponible en datamx.io y construido a partir de registros oficiales del Banco de México.\nSe enriqueció con el tipo de cambio MXN/USD mensual obtenido de la API del Banco de México (Serie SF43718).\n\n\n\n\n\n\nNota\n\n\n\nLicencia: Creative Commons CCZero (dominio público). Los datos son de fuente verificable y abierta."
+  },
+  {
+    "objectID": "dataset.html#fuente-y-contexto",
+    "href": "dataset.html#fuente-y-contexto",
+    "title": "Descripción del Dataset",
+    "section": "",
+    "text": "El dataset utilizado es el registro histórico de Comercio Exterior de México por País (1993–2025), disponible en datamx.io y construido a partir de registros oficiales del Banco de México.\nSe enriqueció con el tipo de cambio MXN/USD mensual obtenido de la API del Banco de México (Serie SF43718).\n\n\n\n\n\n\nNota\n\n\n\nLicencia: Creative Commons CCZero (dominio público). Los datos son de fuente verificable y abierta."
+  },
+  {
+    "objectID": "dataset.html#dimensiones",
+    "href": "dataset.html#dimensiones",
+    "title": "Descripción del Dataset",
+    "section": "Dimensiones",
+    "text": "Dimensiones\n\n\n\nAtributo\nDetalle\n\n\n\n\nRegistros\n184,392 filas\n\n\nColumnas originales\n8\n\n\nColumnas tras enriquecimiento\n12\n\n\nCobertura temporal\nEnero 1993 – 2025 (mensual)\n\n\nPaíses socios\n180 países en 6 continentes"
+  },
+  {
+    "objectID": "dataset.html#variables",
+    "href": "dataset.html#variables",
+    "title": "Descripción del Dataset",
+    "section": "Variables",
+    "text": "Variables\n\nVariables originales\n\n\n\nVariable\nTipo\nDescripción\n\n\n\n\nPERIODO\nFecha\nMes y año del registro\n\n\nCONTINENTE\nCategórica\nContinente del país socio\n\n\nID_CONTINENTE\nNumérica\nCódigo numérico del continente\n\n\nPAIS\nCategórica\nPaís socio comercial\n\n\nID_PAIS\nNumérica\nCódigo numérico del país\n\n\nFLUJO\nCategórica\nExportaciones o Importaciones\n\n\nID_FLUJO\nNumérica\nCódigo del flujo (1 o 2)\n\n\nVALOR_USD\nNumérica\nValor del intercambio en USD\n\n\n\n\n\nVariables derivadas\n\n\n\n\n\n\n\n\nVariable\nTipo\nDescripción\n\n\n\n\nANIO\nNumérica\nExtraída de PERIODO\n\n\nMES\nNumérica\nExtraída de PERIODO\n\n\nTIPO_CAMBIO\nNumérica\nMXN/USD mensual (Banxico SF43718)\n\n\nVALOR_MXN\nNumérica\nVALOR_USD × TIPO_CAMBIO\n\n\nBALANCE\nNumérica\nExportaciones − Importaciones por país-mes\n\n\nSUPERAVIT\nBinaria\n1 = superávit, 0 = déficit (variable objetivo)\n\n\nCONTINENTE_ENC\nNumérica\nLabelEncoder sobre CONTINENTE\n\n\nPAIS_ENC\nNumérica\nLabelEncoder sobre PAIS"
+  },
+  {
+    "objectID": "dataset.html#pertinencia-del-dataset",
+    "href": "dataset.html#pertinencia-del-dataset",
+    "title": "Descripción del Dataset",
+    "section": "Pertinencia del dataset",
+    "text": "Pertinencia del dataset\nEl dataset fue elegido por cuatro razones concretas:\n\nEscala suficiente: 184,392 registros mensuales permiten entrenamiento robusto con división 80/20.\nVariables relevantes: 8 variables originales más variables derivadas que cubren aspectos económicos, geográficos y temporales.\nCompatibilidad con ambas tareas: el mismo dataset alimenta tanto el modelado supervisado como el clustering.\nFuente verificable: licencia CCZero y origen en registros oficiales del Banco de México y la Secretaría de Economía."
+  },
+  {
+    "objectID": "dataset.html#limitaciones-conocidas",
+    "href": "dataset.html#limitaciones-conocidas",
+    "title": "Descripción del Dataset",
+    "section": "Limitaciones conocidas",
+    "text": "Limitaciones conocidas\n\n\n\n\n\n\nAdvertencia\n\n\n\nValores nominales: VALOR_USD no está deflactado por inflación. Parte del crecimiento observado en la serie de tiempo refleja inflación acumulada y no necesariamente mayor volumen real de comercio. Como trabajo futuro se recomienda deflactar con el Índice Nacional de Precios al Productor (INPP).\n\n\n\nGranularidad: datos agregados a nivel país-mes; no permite análisis por producto o fracción arancelaria.\nAño incompleto: 2025 cubre solo los meses disponibles a la fecha de extracción.\nID_CONTINENTE: presenta 28,368 valores faltantes (15.4%), por lo que fue excluida del modelado. La columna CONTINENTE contiene la misma información sin faltantes."
+  },
+  {
+    "objectID": "dataset.html#proceso-de-enriquecimiento",
+    "href": "dataset.html#proceso-de-enriquecimiento",
+    "title": "Descripción del Dataset",
+    "section": "Proceso de enriquecimiento",
+    "text": "Proceso de enriquecimiento\nimport requests\nimport pandas as pd\n\n# Descarga del tipo de cambio MXN/USD desde la API de Banxico (Serie SF43718)\nurl = (\n    \"https://www.banxico.org.mx/SieAPIRest/service/v1/series/\"\n    \"SF43718/datos/1993-01-01/2025-12-31\"\n)\nheaders = {\"Bmx-Token\": \"&lt;token&gt;\"}\nresponse = requests.get(url, headers=headers)\ndatos_tc = response.json()[\"bmx\"][\"series\"][0][\"datos\"]\n\ndf_tc = pd.DataFrame(datos_tc)\ndf_tc[\"fecha\"] = pd.to_datetime(df_tc[\"fecha\"], format=\"%d/%m/%Y\")\ndf_tc[\"TIPO_CAMBIO\"] = df_tc[\"dato\"].astype(float)\n\n# Unión con el dataset principal por año y mes\ndf = df.merge(df_tc[[\"fecha\", \"TIPO_CAMBIO\"]], on=\"fecha\", how=\"left\")\ndf[\"VALOR_MXN\"] = df[\"VALOR_USD\"] * df[\"TIPO_CAMBIO\"]"
+  },
+  {
+    "objectID": "clustering.html",
+    "href": "clustering.html",
+    "title": "Agrupamiento (Clustering)",
+    "section": "",
+    "text": "El agrupamiento tiene como propósito segmentar los 234 países socios de México en perfiles homogéneos de intercambio comercial, revelando la estructura latente del comercio exterior mexicano que no es visible en los datos individuales."
+  },
+  {
+    "objectID": "clustering.html#objetivo",
+    "href": "clustering.html#objetivo",
+    "title": "Agrupamiento (Clustering)",
+    "section": "",
+    "text": "El agrupamiento tiene como propósito segmentar los 234 países socios de México en perfiles homogéneos de intercambio comercial, revelando la estructura latente del comercio exterior mexicano que no es visible en los datos individuales."
+  },
+  {
+    "objectID": "clustering.html#variables-del-perfil-por-país",
+    "href": "clustering.html#variables-del-perfil-por-país",
+    "title": "Agrupamiento (Clustering)",
+    "section": "Variables del perfil por país",
+    "text": "Variables del perfil por país\nPara el clustering se construyó un perfil agregado por país con las siguientes features (todas normalizadas con StandardScaler):\n\n\n\nFeature\nDescripción\n\n\n\n\nEXP_TOTAL\nExportaciones totales acumuladas 1993–2025\n\n\nIMP_TOTAL\nImportaciones totales acumuladas 1993–2025\n\n\nBALANCE_PROM\nBalance mensual promedio (EXP − IMP)\n\n\nEXP_PROM\nExportaciones mensuales promedio\n\n\nIMP_PROM\nImportaciones mensuales promedio\n\n\nN_MESES\nNúmero de meses con registro de intercambio\n\n\n\nfrom sklearn.preprocessing import StandardScaler\n\nperfil_pais = df_modelo.groupby(\"PAIS\").agg(\n    EXP_TOTAL    = (\"Exportaciones\", \"sum\"),\n    IMP_TOTAL    = (\"Importaciones\", \"sum\"),\n    BALANCE_PROM = (\"BALANCE\", \"mean\"),\n    EXP_PROM     = (\"Exportaciones\", \"mean\"),\n    IMP_PROM     = (\"Importaciones\", \"mean\"),\n    N_MESES      = (\"PERIODO\", \"nunique\"),\n).reset_index()\n\nscaler  = StandardScaler()\nX_clust = scaler.fit_transform(perfil_pais.drop(columns=\"PAIS\"))"
+  },
+  {
+    "objectID": "clustering.html#algoritmo-k-means",
+    "href": "clustering.html#algoritmo-k-means",
+    "title": "Agrupamiento (Clustering)",
+    "section": "Algoritmo: K-Means",
+    "text": "Algoritmo: K-Means\nSe utilizó K-Means por su eficiencia con datos numéricos continuos y su alta interpretabilidad para comunicar perfiles a audiencias no especializadas.\n\nSelección del número óptimo de clusters\nSe evaluaron dos criterios complementarios:\n\n\n\nMétodo del codo (izquierda) y coeficiente de silueta (derecha) para seleccionar k.\n\n\n\n\n\nCriterio\nk sugerido\nCoeficiente\n\n\n\n\nCoeficiente de silueta\n2\n0.9887\n\n\nSeleccionado\n4\n—\n\n\n\nEl coeficiente de silueta sugirió k = 2, pero ese resultado está dominado por el volumen atípico de Estados Unidos, que separa a todos los demás países en un único grupo. Se seleccionó k = 4 para obtener una segmentación más informativa que distinga perfiles de alto, medio y bajo volumen comercial.\nfrom sklearn.cluster import KMeans\n\nkmeans = KMeans(n_clusters=4, random_state=42, n_init=10)\nperfil_pais[\"Cluster\"] = kmeans.fit_predict(X_clust)"
+  },
+  {
+    "objectID": "clustering.html#visualización-con-pca",
+    "href": "clustering.html#visualización-con-pca",
+    "title": "Agrupamiento (Clustering)",
+    "section": "Visualización con PCA",
+    "text": "Visualización con PCA\nPara visualizar los clusters en 2 dimensiones se aplicó Análisis de Componentes Principales (PCA), que capturó el 100% de la varianza explicada con dos componentes, confirmando que la estructura de los datos es efectivamente de baja dimensionalidad.\n\n\n\nClusters de socios comerciales de México visualizados con PCA.\n\n\nLos cuatro grupos son claramente separables en el espacio bidimensional, lo que valida la calidad de la segmentación."
+  },
+  {
+    "objectID": "clustering.html#interpretación-de-perfiles",
+    "href": "clustering.html#interpretación-de-perfiles",
+    "title": "Agrupamiento (Clustering)",
+    "section": "Interpretación de perfiles",
+    "text": "Interpretación de perfiles\n\n\n\n\n\n\n\n\nCluster\nPaíses representativos\nPerfil\n\n\n\n\n0 — Socios marginales\n227 países (África, Oceanía, América Latina)\nBajo volumen, déficit moderado. Representan la mayoría de los socios pero una fracción mínima del comercio total.\n\n\n1 — Socio dominante\nEstados Unidos\nVolumen 60× mayor que cualquier otro socio. México mantiene superávit estructural gracias al T-MEC.\n\n\n2 — Gran déficit estructural\nChina\nMéxico importa ~$1.5 billones pero exporta solo $128 mil millones. Déficit promedio de $3,461 millones USD mensuales.\n\n\n3 — Socios tecnológicos deficitarios\nAlemania, Japón, Corea del Sur, Malasia, Taiwán\nProveedores de manufactura avanzada. México importa maquinaria y componentes electrónicos.\n\n\n\n\n\n\n\n\n\nNota\n\n\n\nLos resultados son consistentes con el contexto macroeconómico reciente. El Informe Trimestral del Banco de México (Q1 2026) reporta que las importaciones de uso intermedio no petroleras alcanzaron niveles máximos históricos, impulsadas principalmente por equipo de cómputo y sus partes — precisamente los sectores que dominan los Clusters 2 y 3."
+  },
+  {
+    "objectID": "clustering.html#consistencia-con-el-modelo-supervisado",
+    "href": "clustering.html#consistencia-con-el-modelo-supervisado",
+    "title": "Agrupamiento (Clustering)",
+    "section": "Consistencia con el modelo supervisado",
+    "text": "Consistencia con el modelo supervisado\nLos perfiles del clustering y las predicciones del XGBoost son coherentes entre sí:\n\n\n\n\n\n\n\n\nSocio\nPredicción XGBoost\nCluster asignado\n\n\n\n\nEE.UU.\nSUPERÁVIT (81.5% prob.)\nCluster 1 — Socio dominante con superávit estructural\n\n\nChina\nDÉFICIT (99% prob.)\nCluster 2 — Gran déficit estructural\n\n\nJapón\nDÉFICIT (98% prob.)\nCluster 3 — Socios tecnológicos deficitarios\n\n\nCanadá\nSUPERÁVIT\nCluster 0 / América del Norte\n\n\n\nEsta coherencia entre los dos enfoques (supervisado y no supervisado) refuerza la validez de los resultados y la consistencia del análisis."
+  },
+  {
+    "objectID": "conclusiones.html",
+    "href": "conclusiones.html",
+    "title": "Conclusiones",
+    "section": "",
+    "text": "El comercio exterior mexicano creció 10 veces en 32 años, pasando de aproximadamente $6,000 millones USD mensuales en 1993 a más de $60,000 millones en 2025, con choques claramente identificables en 2009 (crisis financiera global) y 2020 (COVID-19 / T-MEC).\nEl balance comercial es predominantemente deficitario, aunque con tendencia hacia superávits más frecuentes desde 2020 con la entrada en vigor del T-MEC. Esto es consistente con lo reportado por el Banco de México, cuyo Informe Trimestral (enero–marzo 2026) documenta un déficit en cuenta corriente de $15,878 millones USD en el primer trimestre de 2026.\nRandom Forest y XGBoost alcanzaron accuracy superior al 98%, superando la línea base en más de 48 puntos porcentuales. XGBoost obtuvo 99.58% frente al 98.93% del Random Forest, siendo seleccionado como modelo final por su mayor capacidad de capturar relaciones no lineales mediante boosting.\nEl clustering reveló 4 perfiles estratégicos que sintetizan la estructura del comercio exterior mexicano:\n\nEE.UU. como socio dominante con superávit estructural\nChina como fuente de déficit masivo (−$3,461M USD/mes promedio)\nSocios tecnológicos deficitarios (Alemania, Japón, Corea del Sur, Malasia, Taiwán)\n227 socios marginales de bajo volumen\n\nLa demostración en vivo confirmó la consistencia entre el modelo supervisado y el clustering: las predicciones por cluster reprodujeron exactamente los perfiles identificados — superávit con EE.UU. (81.5% de probabilidad) y déficit con China y Japón (99% y 98% respectivamente)."
+  },
+  {
+    "objectID": "conclusiones.html#hallazgos-principales",
+    "href": "conclusiones.html#hallazgos-principales",
+    "title": "Conclusiones",
+    "section": "",
+    "text": "El comercio exterior mexicano creció 10 veces en 32 años, pasando de aproximadamente $6,000 millones USD mensuales en 1993 a más de $60,000 millones en 2025, con choques claramente identificables en 2009 (crisis financiera global) y 2020 (COVID-19 / T-MEC).\nEl balance comercial es predominantemente deficitario, aunque con tendencia hacia superávits más frecuentes desde 2020 con la entrada en vigor del T-MEC. Esto es consistente con lo reportado por el Banco de México, cuyo Informe Trimestral (enero–marzo 2026) documenta un déficit en cuenta corriente de $15,878 millones USD en el primer trimestre de 2026.\nRandom Forest y XGBoost alcanzaron accuracy superior al 98%, superando la línea base en más de 48 puntos porcentuales. XGBoost obtuvo 99.58% frente al 98.93% del Random Forest, siendo seleccionado como modelo final por su mayor capacidad de capturar relaciones no lineales mediante boosting.\nEl clustering reveló 4 perfiles estratégicos que sintetizan la estructura del comercio exterior mexicano:\n\nEE.UU. como socio dominante con superávit estructural\nChina como fuente de déficit masivo (−$3,461M USD/mes promedio)\nSocios tecnológicos deficitarios (Alemania, Japón, Corea del Sur, Malasia, Taiwán)\n227 socios marginales de bajo volumen\n\nLa demostración en vivo confirmó la consistencia entre el modelo supervisado y el clustering: las predicciones por cluster reprodujeron exactamente los perfiles identificados — superávit con EE.UU. (81.5% de probabilidad) y déficit con China y Japón (99% y 98% respectivamente)."
+  },
+  {
+    "objectID": "conclusiones.html#implicaciones-macroeconómicas",
+    "href": "conclusiones.html#implicaciones-macroeconómicas",
+    "title": "Conclusiones",
+    "section": "Implicaciones macroeconómicas",
+    "text": "Implicaciones macroeconómicas\nUna pregunta natural que surge del análisis es: ¿puede este modelo usarse para anticipar si la balanza comercial general de México será superavitaria o deficitaria?\nLa respuesta es parcialmente afirmativa. Dado que Estados Unidos concentra más del 80% del comercio exterior mexicano, las predicciones sobre ese socio tienen un peso determinante sobre el balance agregado.\nEsta capacidad predictiva tiene implicaciones directas en tres ámbitos:\n\n\n\nReservas internacionales\nUn déficit comercial sostenido reduce las reservas del Banco de México porque el país necesita más dólares para cubrir el exceso de importaciones sobre exportaciones. Las reservas se situaron en ~$226,000 millones USD a inicios de 2026.\n\n\nTipo de cambio\nEl déficit comercial genera mayor demanda de dólares, lo que ejerce presión depreciatoria sobre el peso. Este mecanismo explica en parte la trayectoria del tipo de cambio: de $3.10 a $24.27 MXN/USD entre 1993 y 2025.\n\n\nPolítica monetaria\nEl Banco de México monitorea la balanza comercial como indicador de presión sobre el tipo de cambio. Cuando el déficit se amplía, Banxico puede aumentar la tasa de referencia para frenar la depreciación y hacer más atractivos los activos en pesos."
+  },
+  {
+    "objectID": "conclusiones.html#limitaciones",
+    "href": "conclusiones.html#limitaciones",
+    "title": "Conclusiones",
+    "section": "Limitaciones",
+    "text": "Limitaciones\n\n\n\n\n\n\n\nLimitación\nDescripción\n\n\n\n\nValores nominales\nVALOR_USD no está deflactado. Parte del crecimiento observable refleja inflación acumulada y no mayor volumen real.\n\n\nRelación casi determinista\nEl alto accuracy (&gt;98%) refleja que Exportaciones e Importaciones tienen relación directa con la variable objetivo. El modelo aprende esencialmente la fórmula del balance.\n\n\nGranularidad\nEl dataset agrega por país-mes sin desagregación por producto o fracción arancelaria.\n\n\nBalance agregado\nEl modelo predice por par país-mes, no el balance nacional total. Para estimar el agregado se requeriría ponderar por el peso de cada socio."
+  },
+  {
+    "objectID": "conclusiones.html#trabajo-futuro",
+    "href": "conclusiones.html#trabajo-futuro",
+    "title": "Conclusiones",
+    "section": "Trabajo futuro",
+    "text": "Trabajo futuro\n\nDeflactación: incorporar el Índice Nacional de Precios al Productor (INPP) para convertir VALOR_USD a valores reales, eliminando el efecto inflacionario de 32 años.\nClustering por fracción arancelaria: aplicar agrupamiento a nivel de código TIGIE (8 dígitos), disponible en la Balanza Comercial de Mercancías del SAT/INEGI. Permitiría confirmar empíricamente la especialización de México en manufactura de ensamble y la dependencia de China en circuitos integrados.\nVariables macroeconómicas adicionales: incorporar PIB de socios comerciales, aranceles vigentes (especialmente relevante en el contexto de tensiones comerciales 2025–2026) e índices de confianza empresarial.\nPredicción del balance agregado: extender el modelo para predecir el valor numérico del balance total de México (regresión) con horizonte de 6–12 meses.\nSeries de tiempo: aplicar modelos ARIMA o LSTM para capturar la dinámica temporal del balance comercial, incorporando la estacionalidad y tendencias de largo plazo identificadas en el EDA."
+  },
+  {
+    "objectID": "conclusiones.html#referencias",
+    "href": "conclusiones.html#referencias",
+    "title": "Conclusiones",
+    "section": "Referencias",
+    "text": "Referencias\n\nBanco de México. (2024). Estadísticas de Balanza de Pagos. https://www.banxico.org.mx/\nBanco de México. (2026). Informe Trimestral Enero–Marzo 2026. https://www.banxico.org.mx/publicaciones-y-prensa/informes-trimestrales/\nBanco de México. (2025). SIE API REST. Serie SF43718: Tipo de cambio interbancario MXN/USD. https://www.banxico.org.mx/SieAPIRest/service/v1/\nCodeando México. (2025). Comercio Exterior de México por País (1993–2025). datamx.io. https://datamx.io/es/dataset/comercio-exterior-de-mexico-por-pais-1993-2025\nSecretaría de Economía. (2024). DataMéxico — Visualizador de Comercio Exterior. https://www.economia.gob.mx/datamexico/es/vizbuilder\nBreiman, L. (2001). Random Forests. Machine Learning, 45(1), 5–32. https://doi.org/10.1023/A:1010933404324\nChen, T., & Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. Proceedings of the 22nd ACM SIGKDD, 785–794. https://doi.org/10.1145/2939672.2939785\nPedregosa, F., et al. (2011). Scikit-learn: Machine Learning in Python. Journal of Machine Learning Research, 12, 2825–2830.\nMacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. Proceedings of the 5th Berkeley Symposium, 1(14), 281–297."
+  },
+  {
+    "objectID": "eda.html",
+    "href": "eda.html",
+    "title": "Análisis Exploratorio de Datos",
+    "section": "",
+    "text": "El dataset contiene 184,392 registros mensuales de 180 países socios en 6 continentes. VALOR_USD presenta un coeficiente de variación superior al 300%, reflejo de la enorme heterogeneidad entre socios comerciales — desde pequeñas economías insulares hasta Estados Unidos, el principal socio de México."
+  },
+  {
+    "objectID": "eda.html#descripción-general",
+    "href": "eda.html#descripción-general",
+    "title": "Análisis Exploratorio de Datos",
+    "section": "",
+    "text": "El dataset contiene 184,392 registros mensuales de 180 países socios en 6 continentes. VALOR_USD presenta un coeficiente de variación superior al 300%, reflejo de la enorme heterogeneidad entre socios comerciales — desde pequeñas economías insulares hasta Estados Unidos, el principal socio de México."
+  },
+  {
+    "objectID": "eda.html#limpieza-de-datos",
+    "href": "eda.html#limpieza-de-datos",
+    "title": "Análisis Exploratorio de Datos",
+    "section": "Limpieza de datos",
+    "text": "Limpieza de datos\n\nValores faltantes\nÚnicamente ID_CONTINENTE presenta valores faltantes: 28,368 registros (15.4%). Dado que CONTINENTE contiene la misma información sin faltantes, se excluyó ID_CONTINENTE del modelado sin pérdida de información.\n\n\n\nMapa de valores faltantes. Solo ID_CONTINENTE presenta datos ausentes (15.4%).\n\n\n\n\nRegistros duplicados\nNo se encontraron registros duplicados (0 filas, 0.0%).\n\n\nValores atípicos\nVALOR_USD presenta distribución fuertemente asimétrica. Los valores extremos corresponden a intercambios con EE.UU., un fenómeno real y económicamente relevante, no un error de captura. Por ello no se eliminaron; en su lugar se aplicó transformación log1p para el modelado.\n\n\n\nBoxplots de VALOR_USD en escala original (izquierda) y logarítmica (derecha)."
+  },
+  {
+    "objectID": "eda.html#distribución-de-variables-numéricas",
+    "href": "eda.html#distribución-de-variables-numéricas",
+    "title": "Análisis Exploratorio de Datos",
+    "section": "Distribución de variables numéricas",
+    "text": "Distribución de variables numéricas\n\n\n\nDistribución de variables numéricas del dataset.\n\n\nLa figura revela cuatro patrones:\n\nVALOR_USD concentrado cerca de cero con pocos valores extremos muy grandes.\nDistribución bimodal en escala logarítmica, que refleja dos grupos: socios de alto volumen (EE.UU., China) y el resto del mundo.\nRegistros distribuidos uniformemente por año (~5,500/año), con ligera reducción en 2025 por año incompleto.\nDistribución mensual homogénea, lo que descarta estacionalidad fuerte en el número de registros."
+  },
+  {
+    "objectID": "eda.html#serie-de-tiempo-19932025",
+    "href": "eda.html#serie-de-tiempo-19932025",
+    "title": "Análisis Exploratorio de Datos",
+    "section": "Serie de tiempo 1993–2025",
+    "text": "Serie de tiempo 1993–2025\n\n\n\nExportaciones vs importaciones mensuales (arriba) y balance comercial mensual (abajo).\n\n\nLa serie permite identificar cuatro hallazgos estructurales:\n\n\n\n\n\n\n\n\nEvento\nAño(s)\nObservación\n\n\n\n\nTendencia creciente\n1993–2025\nEl comercio exterior pasó de ~$6,000 a más de $60,000 millones USD/mes\n\n\nCrisis financiera global\n2008–2009\nCaída abrupta del ~45%, seguida de recuperación rápida\n\n\nCOVID-19\n2020\nContracción severa con recuperación en forma de V\n\n\nT-MEC\n2020–\nSuperávits más frecuentes; balance menos negativo\n\n\n\n\n\n\n\n\n\nNota\n\n\n\nDe acuerdo con el Informe Trimestral del Banco de México (enero–marzo 2026), el PIB de México registró una contracción de 0.62% en el primer trimestre de 2026, en un entorno de debilidad generalizada de la actividad económica. Al mismo tiempo, las importaciones no petroleras alcanzaron niveles máximos históricos, impulsadas principalmente por equipo de cómputo."
+  },
+  {
+    "objectID": "eda.html#correlaciones-entre-variables",
+    "href": "eda.html#correlaciones-entre-variables",
+    "title": "Análisis Exploratorio de Datos",
+    "section": "Correlaciones entre variables",
+    "text": "Correlaciones entre variables\n\n\n\nMatriz de correlaciones de las variables numéricas principales.\n\n\nLas correlaciones más relevantes para el modelado supervisado:\n\nExportaciones e Importaciones tienen correlación alta entre sí (~0.95), lo esperado dado que los socios más activos exportan e importan volúmenes similares.\nBALANCE (Exportaciones − Importaciones) tiene correlación casi perfecta con SUPERAVIT, lo que confirma la definición correcta de la variable objetivo.\nTIPO_CAMBIO muestra correlación positiva moderada con VALOR_MXN, capturando el efecto de la depreciación del peso sobre el valor en moneda nacional."
+  },
+  {
+    "objectID": "eda.html#variables-derivadas-y-codificación",
+    "href": "eda.html#variables-derivadas-y-codificación",
+    "title": "Análisis Exploratorio de Datos",
+    "section": "Variables derivadas y codificación",
+    "text": "Variables derivadas y codificación\n# Variables derivadas\ndf[\"ANIO\"] = df[\"PERIODO\"].dt.year\ndf[\"MES\"]  = df[\"PERIODO\"].dt.month\n\n# Balance y variable objetivo\npivot = df.pivot_table(\n    index=[\"PERIODO\", \"PAIS\", \"CONTINENTE\", \"PAIS_ENC\", \"CONTINENTE_ENC\",\n           \"ANIO\", \"MES\", \"TIPO_CAMBIO\"],\n    columns=\"FLUJO\",\n    values=\"VALOR_USD\",\n    aggfunc=\"sum\"\n).reset_index()\n\npivot.columns.name = None\npivot = pivot.rename(columns={\n    \"Exportaciones\": \"Exportaciones\",\n    \"Importaciones\": \"Importaciones\"\n})\n\npivot[\"BALANCE\"]  = pivot[\"Exportaciones\"] - pivot[\"Importaciones\"]\npivot[\"SUPERAVIT\"] = (pivot[\"BALANCE\"] &gt; 0).astype(int)"
+  },
+  {
+    "objectID": "arquitectura.html",
+    "href": "arquitectura.html",
+    "title": "Arquitectura y Diseño",
+    "section": "",
+    "text": "El proyecto está organizado en 9 clases Python con responsabilidades bien definidas, siguiendo principios de encapsulamiento y separación de responsabilidades (principio de responsabilidad única):\n\n\n\n\n\n\n\n\nClase\nMódulo\nResponsabilidad\n\n\n\n\nDataLoader\ndata_loader.py\nCarga del CSV y enriquecimiento con tipo de cambio\n\n\nEDA\neda.py\nCalidad de datos y estadísticas descriptivas\n\n\nEDAVisualizaciones\neda_visualizaciones.py\nHistogramas, series de tiempo y correlaciones\n\n\nPreprocessor\npreprocessor.py\nEncoding, normalización y división 80/20\n\n\nModelTrainer\nmodel_trainer.py\nEntrenamiento y evaluación Random Forest\n\n\nModelTrainerXGBoost\nmodel_trainer_xgboost.py\nEntrenamiento y evaluación XGBoost\n\n\nClustering\nclustering.py\nK-Means, visualización PCA y perfiles\n\n\nStage\npipeline.py\nEtapa individual del pipeline\n\n\nPipeline\npipeline.py\nOrquestación del flujo completo"
+  },
+  {
+    "objectID": "arquitectura.html#estructura-de-clases",
+    "href": "arquitectura.html#estructura-de-clases",
+    "title": "Arquitectura y Diseño",
+    "section": "",
+    "text": "El proyecto está organizado en 9 clases Python con responsabilidades bien definidas, siguiendo principios de encapsulamiento y separación de responsabilidades (principio de responsabilidad única):\n\n\n\n\n\n\n\n\nClase\nMódulo\nResponsabilidad\n\n\n\n\nDataLoader\ndata_loader.py\nCarga del CSV y enriquecimiento con tipo de cambio\n\n\nEDA\neda.py\nCalidad de datos y estadísticas descriptivas\n\n\nEDAVisualizaciones\neda_visualizaciones.py\nHistogramas, series de tiempo y correlaciones\n\n\nPreprocessor\npreprocessor.py\nEncoding, normalización y división 80/20\n\n\nModelTrainer\nmodel_trainer.py\nEntrenamiento y evaluación Random Forest\n\n\nModelTrainerXGBoost\nmodel_trainer_xgboost.py\nEntrenamiento y evaluación XGBoost\n\n\nClustering\nclustering.py\nK-Means, visualización PCA y perfiles\n\n\nStage\npipeline.py\nEtapa individual del pipeline\n\n\nPipeline\npipeline.py\nOrquestación del flujo completo"
+  },
+  {
+    "objectID": "arquitectura.html#patrón-de-diseño-pipeline",
+    "href": "arquitectura.html#patrón-de-diseño-pipeline",
+    "title": "Arquitectura y Diseño",
+    "section": "Patrón de diseño: Pipeline",
+    "text": "Patrón de diseño: Pipeline\nSe implementó el patrón Pipeline, el más adecuado para este proyecto porque el procesamiento ocurre en etapas secuenciales bien definidas y dependientes entre sí:\nDataLoader → EDA → EDAVisualizaciones → Preprocessor → ModelTrainer → Clustering\nCada etapa está encapsulada en un objeto Stage con su nombre, descripción y función ejecutable. El objeto Pipeline orquesta la ejecución secuencial pasando un contexto compartido (diccionario Python) entre etapas.\n\nVentajas del diseño\n\nDepuración facilitada: permite ejecutar desde cualquier etapa con --desde N, evitando re-ejecutar etapas costosas (como el entrenamiento).\nMantenimiento: cada clase puede modificarse sin afectar las demás, siempre que respete las claves del contexto compartido.\nObservabilidad: cada etapa reporta su tiempo de ejecución y estado de completitud.\n\n\n\nFragmento del patrón Stage\nclass Stage:\n    \"\"\"Representa una etapa individual del pipeline.\"\"\"\n\n    def __init__(self, numero: int, nombre: str,\n                 descripcion: str, funcion):\n        self.numero      = numero\n        self.nombre      = nombre\n        self.descripcion = descripcion\n        self.funcion     = funcion\n        self.completada  = False\n        self.duracion    = 0.0\n\n    def ejecutar(self, contexto: dict) -&gt; dict:\n        \"\"\"Ejecuta la etapa y actualiza el contexto compartido.\"\"\"\n        inicio = time.time()\n        contexto = self.funcion(contexto)\n        self.duracion   = time.time() - inicio\n        self.completada = True\n        return contexto\n\n\nEjecución del pipeline\n# Ejecutar el flujo completo\npython src/pipeline.py\n\n# Ejecutar desde la etapa 4 (Preprocessor) — omite carga y EDA\npython src/pipeline.py --desde 4"
+  },
+  {
+    "objectID": "arquitectura.html#diagramas-uml",
+    "href": "arquitectura.html#diagramas-uml",
+    "title": "Arquitectura y Diseño",
+    "section": "Diagramas UML",
+    "text": "Diagramas UML\n\nDiagrama de clases\n\n\n\nDiagrama UML de la arquitectura del proyecto.\n\n\n\n\nDiagrama del pipeline\n\n\n\nDiagrama de flujo del pipeline de procesamiento."
+  },
+  {
+    "objectID": "arquitectura.html#serialización-del-modelo",
+    "href": "arquitectura.html#serialización-del-modelo",
+    "title": "Arquitectura y Diseño",
+    "section": "Serialización del modelo",
+    "text": "Serialización del modelo\nLos modelos entrenados fueron serializados con joblib para permitir su reutilización independiente del entrenamiento. Los artefactos guardados son:\n\n\n\n\n\n\n\nArchivo\nContenido\n\n\n\n\nmodels/xgboost.joblib\nModelo XGBoost entrenado (modelo final)\n\n\nmodels/random_forest.joblib\nModelo Random Forest entrenado\n\n\nmodels/scaler.joblib\nStandardScaler ajustado en entrenamiento\n\n\nmodels/le_continente.joblib\nLabelEncoder para la variable CONTINENTE\n\n\nmodels/le_pais.joblib\nLabelEncoder para la variable PAIS\n\n\n\nimport joblib\n\n# Serializar\njoblib.dump(modelo,   \"models/xgboost.joblib\")\njoblib.dump(scaler,   \"models/scaler.joblib\")\njoblib.dump(le_cont,  \"models/le_continente.joblib\")\njoblib.dump(le_pais,  \"models/le_pais.joblib\")\n\n# Cargar en cualquier script posterior\nmodelo  = joblib.load(\"models/xgboost.joblib\")\nscaler  = joblib.load(\"models/scaler.joblib\")\nle_cont = joblib.load(\"models/le_continente.joblib\")\nle_pais = joblib.load(\"models/le_pais.joblib\")"
+  },
+  {
+    "objectID": "supervisado.html",
+    "href": "supervisado.html",
+    "title": "Modelo Supervisado",
+    "section": "",
+    "text": "La tarea se formula como clasificación binaria: predecir si el balance comercial mensual de México con un país dado será superávit (SUPERAVIT = 1) o déficit (SUPERAVIT = 0).\nEl dataset resultante contiene 92,196 registros país-mes con clases prácticamente balanceadas: 50.9% superávit y 49.1% déficit, eliminando la necesidad de técnicas de balanceo como SMOTE."
+  },
+  {
+    "objectID": "supervisado.html#planteamiento-de-la-tarea",
+    "href": "supervisado.html#planteamiento-de-la-tarea",
+    "title": "Modelo Supervisado",
+    "section": "",
+    "text": "La tarea se formula como clasificación binaria: predecir si el balance comercial mensual de México con un país dado será superávit (SUPERAVIT = 1) o déficit (SUPERAVIT = 0).\nEl dataset resultante contiene 92,196 registros país-mes con clases prácticamente balanceadas: 50.9% superávit y 49.1% déficit, eliminando la necesidad de técnicas de balanceo como SMOTE."
+  },
+  {
+    "objectID": "supervisado.html#variables-de-entrada",
+    "href": "supervisado.html#variables-de-entrada",
+    "title": "Modelo Supervisado",
+    "section": "Variables de entrada",
+    "text": "Variables de entrada\nSe seleccionaron 7 features:\n\n\n\nFeature\nDescripción\n\n\n\n\nExportaciones\nValor mensual de exportaciones en USD\n\n\nImportaciones\nValor mensual de importaciones en USD\n\n\nTIPO_CAMBIO\nTipo de cambio MXN/USD del mes (Banxico SF43718)\n\n\nCONTINENTE_ENC\nRegión geográfica codificada con LabelEncoder\n\n\nPAIS_ENC\nIdentificador del país codificado con LabelEncoder\n\n\nANIO\nComponente de tendencia temporal\n\n\nMES\nComponente de estacionalidad\n\n\n\n\n\n\n\n\n\nAdvertencia\n\n\n\nSe excluyeron ID_CONTINENTE (faltantes), PERIODO (reemplazado por ANIO y MES) y BALANCE (causa data leakage porque deriva directamente de SUPERAVIT)."
+  },
+  {
+    "objectID": "supervisado.html#división-de-datos",
+    "href": "supervisado.html#división-de-datos",
+    "title": "Modelo Supervisado",
+    "section": "División de datos",
+    "text": "División de datos\nDivisión estratificada 80/20 con random_state=42:\n\nEntrenamiento: 73,756 registros — 50.9% superávit\nPrueba: 18,440 registros — 50.9% superávit\n\nfrom sklearn.model_selection import train_test_split\n\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y,\n    test_size=0.2,\n    random_state=42,\n    stratify=y\n)"
+  },
+  {
+    "objectID": "supervisado.html#modelo-1-random-forest",
+    "href": "supervisado.html#modelo-1-random-forest",
+    "title": "Modelo Supervisado",
+    "section": "Modelo 1: Random Forest",
+    "text": "Modelo 1: Random Forest\n\nBúsqueda de hiperparámetros\nGridSearchCV con 5 folds, 24 candidatos, 120 fits en total. Métrica de optimización: f1_weighted.\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import GridSearchCV\n\nparam_grid = {\n    \"n_estimators\":       [100, 200],\n    \"max_depth\":          [None, 10, 20],\n    \"min_samples_split\":  [2, 5],\n    \"min_samples_leaf\":   [1, 2],\n}\n\ngs = GridSearchCV(\n    RandomForestClassifier(random_state=42),\n    param_grid,\n    cv=5,\n    scoring=\"f1_weighted\",\n    n_jobs=-1\n)\ngs.fit(X_train_scaled, y_train)\nHiperparámetros óptimos:\n\n\n\nHiperparámetro\nValor óptimo\n\n\n\n\nn_estimators\n200\n\n\nmax_depth\nNone\n\n\nmin_samples_split\n2\n\n\nmin_samples_leaf\n1\n\n\n\n\n\nResultados\n\n\n98.93%\nAccuracy\n\n\n0.9995\nAUC-ROC\n\n\n+48.03 pp\nMejora vs baseline\n\n\n\n\n\nMétrica\nValor\n\n\n\n\nAccuracy\n0.9893\n\n\nPrecision (weighted)\n0.9893\n\n\nRecall (weighted)\n0.9893\n\n\nF1-score (weighted)\n0.9893\n\n\nF1-score (macro)\n0.9893\n\n\nAUC-ROC\n0.9995\n\n\nLínea base\n0.5091\n\n\nMejora\n+48.03 pp\n\n\n\n\n\n\n\n\n\nMatriz de confusión — Random Forest.\n\n\n\n\n\n\n\nCurva ROC — Random Forest (AUC = 0.9995).\n\n\n\n\n\n\n\nImportancia de features\n\n\n\nImportancia de variables según el Random Forest.\n\n\nExportaciones e Importaciones dominan la importancia de features, lo que es coherente con la definición de la variable objetivo: el balance es casi determinista dado el valor de ambos flujos."
+  },
+  {
+    "objectID": "supervisado.html#modelo-2-xgboost",
+    "href": "supervisado.html#modelo-2-xgboost",
+    "title": "Modelo Supervisado",
+    "section": "Modelo 2: XGBoost",
+    "text": "Modelo 2: XGBoost\n\nBúsqueda de hiperparámetros\nGridSearchCV con 5 folds, 24 candidatos, 120 fits en total. Métrica de optimización: f1_weighted.\nfrom xgboost import XGBClassifier\n\nparam_grid = {\n    \"n_estimators\":  [100, 200],\n    \"max_depth\":     [4, 6],\n    \"learning_rate\": [0.05, 0.1],\n    \"subsample\":     [0.8, 1.0],\n}\n\ngs = GridSearchCV(\n    XGBClassifier(\n        use_label_encoder=False,\n        eval_metric=\"logloss\",\n        random_state=42\n    ),\n    param_grid,\n    cv=5,\n    scoring=\"f1_weighted\",\n    n_jobs=-1\n)\ngs.fit(X_train_scaled, y_train)\nHiperparámetros óptimos:\n\n\n\nHiperparámetro\nValor óptimo\n\n\n\n\nn_estimators\n200\n\n\nmax_depth\n6\n\n\nlearning_rate\n0.1\n\n\nsubsample\n0.8\n\n\n\n\n\nResultados\n\n\n99.58%\nAccuracy\n\n\n0.9999\nAUC-ROC\n\n\n+48.67 pp\nMejora vs baseline\n\n\n\n\n\nMétrica\nValor\n\n\n\n\nAccuracy\n0.9958\n\n\nPrecision (weighted)\n0.9958\n\n\nRecall (weighted)\n0.9958\n\n\nF1-score (weighted)\n0.9958\n\n\nF1-score (macro)\n0.9958\n\n\nAUC-ROC\n0.9999\n\n\nLínea base\n0.5091\n\n\nMejora\n+48.67 pp\n\n\n\n\n\n\n\n\n\nMatriz de confusión — XGBoost.\n\n\n\n\n\n\n\nCurva ROC — XGBoost (AUC = 0.9999)."
+  },
+  {
+    "objectID": "supervisado.html#comparación-de-modelos",
+    "href": "supervisado.html#comparación-de-modelos",
+    "title": "Modelo Supervisado",
+    "section": "Comparación de modelos",
+    "text": "Comparación de modelos\n\n\n\nComparación de Accuracy: línea base, Random Forest y XGBoost.\n\n\nXGBoost supera a Random Forest en 0.65 puntos porcentuales (99.58% vs 98.93%). La ventaja se explica por el mecanismo de boosting: mientras Random Forest construye árboles en paralelo e independientemente, XGBoost los construye secuencialmente, corrigiendo los errores de la iteración anterior mediante gradiente descendente. Esto le permite capturar relaciones más sutiles, como la interacción entre TIPO_CAMBIO y los flujos comerciales en periodos de alta volatilidad cambiaria."
+  },
+  {
+    "objectID": "supervisado.html#demostración-de-reutilización-méxico-canadá-2025",
+    "href": "supervisado.html#demostración-de-reutilización-méxico-canadá-2025",
+    "title": "Modelo Supervisado",
+    "section": "Demostración de reutilización — México ↔︎ Canadá 2025",
+    "text": "Demostración de reutilización — México ↔︎ Canadá 2025\nXGBoost fue serializado con joblib para demostrar su reutilización independiente del entrenamiento. El script src/demo_prediccion_canada.py carga el modelo desde disco y predice para un escenario nuevo sin acceso al dataset original.\nimport joblib\nimport pandas as pd\n\n# Cargar modelo y transformadores sin re-entrenar\nmodelo  = joblib.load(\"models/xgboost.joblib\")\nscaler  = joblib.load(\"models/scaler.joblib\")\nle_cont = joblib.load(\"models/le_continente.joblib\")\nle_pais = joblib.load(\"models/le_pais.joblib\")\n\n# Escenario: México — Canadá, enero 2025\nnuevos_datos = pd.DataFrame({\n    \"Exportaciones\":  [600_000_000],\n    \"Importaciones\":  [400_000_000],\n    \"TIPO_CAMBIO\":    [18.0],\n    \"CONTINENTE_ENC\": [le_cont.transform([\"América del Norte\"])[0]],\n    \"PAIS_ENC\":       [le_pais.transform([\"Canadá\"])[0]],\n    \"ANIO\":           [2025],\n    \"MES\":            [1],\n})\n\ndatos_scaled = scaler.transform(nuevos_datos)\nX_final      = pd.DataFrame(datos_scaled, columns=nuevos_datos.columns)\n\nprediccion   = modelo.predict(X_final)[0]\nprobabilidad = modelo.predict_proba(X_final)[0]\n# Resultado: SUPERÁVIT 🟢\n\n\n\nProbabilidades predichas por XGBoost para el escenario México–Canadá, enero 2025.\n\n\n\n\n\n\n\n\nTip\n\n\n\nResultado: el modelo predice SUPERÁVIT para México–Canadá en enero 2025, coherente con el perfil histórico: México exporta más bienes manufacturados a Canadá de los que importa de ese país."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Análisis del Comercio Exterior de México",
+    "section": "",
+    "text": "Este sitio documenta el Proyecto Final del curso Almacenes y Minería de Datos de la Facultad de Ciencias, UNAM (junio 2026).\nEl proyecto analiza los flujos mensuales de importaciones y exportaciones de México con sus socios comerciales durante el periodo 1993–2025, con dos objetivos analíticos principales:\n\nModelado supervisado: predecir si el balance comercial mensual de México con un país dado será superávit o déficit (clasificación binaria).\nAgrupamiento no supervisado: segmentar los países socios en perfiles homogéneos de intercambio comercial."
+  },
+  {
+    "objectID": "index.html#presentación-del-proyecto",
+    "href": "index.html#presentación-del-proyecto",
+    "title": "Análisis del Comercio Exterior de México",
+    "section": "",
+    "text": "Este sitio documenta el Proyecto Final del curso Almacenes y Minería de Datos de la Facultad de Ciencias, UNAM (junio 2026).\nEl proyecto analiza los flujos mensuales de importaciones y exportaciones de México con sus socios comerciales durante el periodo 1993–2025, con dos objetivos analíticos principales:\n\nModelado supervisado: predecir si el balance comercial mensual de México con un país dado será superávit o déficit (clasificación binaria).\nAgrupamiento no supervisado: segmentar los países socios en perfiles homogéneos de intercambio comercial."
+  },
+  {
+    "objectID": "index.html#equipo",
+    "href": "index.html#equipo",
+    "title": "Análisis del Comercio Exterior de México",
+    "section": "Equipo",
+    "text": "Equipo\n\n\n\n\nIntegrante\nNo. de cuenta\n\n\n\n\n👩‍💻\nSolano Marcial Irany\n304229066\n\n\n👩‍💻\nJiménez Ruíz Brenda\n423085437\n\n\n\nProfesora: Jessica Santizo Galicia\nAyudante de Teoría: Diego Antonio Villalba González\nAyudante de Laboratorio: Ares Gael Castro Romero"
+  },
+  {
+    "objectID": "index.html#resultados-principales",
+    "href": "index.html#resultados-principales",
+    "title": "Análisis del Comercio Exterior de México",
+    "section": "Resultados Principales",
+    "text": "Resultados Principales\n\n\n184,392\nregistros dataset\n\n\n180\npaíses socios\n\n\n99.58%\naccuracy XGBoost\n\n\n0.9999\nAUC-ROC\n\n\n4\nclusters identificados\n\n\n32 años\ncobertura temporal"
+  },
+  {
+    "objectID": "index.html#estructura-del-sitio",
+    "href": "index.html#estructura-del-sitio",
+    "title": "Análisis del Comercio Exterior de México",
+    "section": "Estructura del sitio",
+    "text": "Estructura del sitio\n\n\n\nSección\nContenido\n\n\n\n\nDataset\nFuente, variables, dimensiones y limitaciones\n\n\nEDA\nAnálisis exploratorio: distribuciones, serie de tiempo y correlaciones\n\n\nModelo Supervisado\nRandom Forest y XGBoost: entrenamiento, evaluación y comparación\n\n\nClustering\nK-Means: selección de k, visualización PCA e interpretación de perfiles\n\n\nArquitectura\nDiseño orientado a objetos, patrón Pipeline y diagramas UML\n\n\nConclusiones\nHallazgos, implicaciones macroeconómicas, limitaciones y trabajo futuro"
+  },
+  {
+    "objectID": "index.html#tecnologías",
+    "href": "index.html#tecnologías",
+    "title": "Análisis del Comercio Exterior de México",
+    "section": "Tecnologías",
+    "text": "Tecnologías"
+  },
+  {
+    "objectID": "index.html#repositorio",
+    "href": "index.html#repositorio",
+    "title": "Análisis del Comercio Exterior de México",
+    "section": "Repositorio",
+    "text": "Repositorio\nEl código fuente está disponible en GitHub: github.com/rany2023/Proyecto_Final_AyMD"
+  }
+]
