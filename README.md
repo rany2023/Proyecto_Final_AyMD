@@ -113,7 +113,7 @@ prediccion = modelo.predict(nuevos_datos)
 
 ## Sitio de documentación (Quarto)
 
-🔗 **[Pendiente — se agregará al desplegar GitHub Pages]**
+🔗 **[Sitio del proyecto](https://rany2023.github.io/Proyecto_Final_AyMD/)**
 
 ---
 
