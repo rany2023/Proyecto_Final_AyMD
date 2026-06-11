@@ -98,6 +98,7 @@ jupyter notebook notebooks/
 Orden sugerido:
 1. `01_EDA.ipynb` — Análisis exploratorio de datos
 2. `02_modelo_supervisado.ipynb` — Entrenamiento y evaluación del modelo
+2. `02b_modelo_random_forest` — Entrenamiento y evaluación del modelo
 3. `03_clustering.ipynb` — Agrupamiento de socios comerciales
 
 ### 5. Cargar el modelo entrenado
@@ -117,9 +118,9 @@ prediccion = modelo.predict(nuevos_datos)
 
 ---
 
-## Video de exposición
+## Presentación (slides)
 
-🎥 **[Pendiente — enlace al video en YouTube/Drive]**
+🎥 **[Enlace de la Presentación](https://canva.link/95q9rrxvpgfs1x8)**
 
 ---
 
