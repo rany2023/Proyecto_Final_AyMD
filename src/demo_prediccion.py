@@ -26,7 +26,8 @@ def demo_prediccion():
 
     # ── Cargar modelo y transformadores desde disco ───────────────────────────
     print('\n── Cargando modelo y transformadores desde disco...')
-    modelo  = joblib.load('models/random_forest.joblib')
+    #modelo  = joblib.load('models/random_forest.joblib') Descomentar para usar random_forest
+    modelo = joblib.load('models/xgboost.joblib')
     scaler  = joblib.load('models/scaler.joblib')
     le_cont = joblib.load('models/le_continente.joblib')
     le_pais = joblib.load('models/le_pais.joblib')
