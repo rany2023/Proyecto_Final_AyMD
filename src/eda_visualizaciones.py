@@ -199,92 +199,20 @@ class EDAVisualizaciones:
         print(f'  Balance promedio:    ${balance["BALANCE"].mean():,.0f} USD')
 
     # ──────────────────────────────────────────────────────────────────────────
-    # Matriz de correlaciones (placeholder)
+    # BRENDA — Matriz de correlaciones (placeholder)
     # ──────────────────────────────────────────────────────────────────────────
     def correlaciones(self):
-        """Matriz de correlaciones"""
-        print('\n── Generando matriz de correlaciones...')
-
-        # Codificación de variables categóricas útiles
-        df_corr = self.df.copy()
-        df_corr['FLUJO_COD'] = df_corr['FLUJO'].map({'Exportaciones': 1, 'Importaciones': 0})
-        df_corr['MES_NUM']   = df_corr['MES']
-
-        cols   = ['VALOR_USD', 'ANIO', 'MES_NUM', 'FLUJO_COD']
-        matriz = df_corr[cols].corr()
-
-        fig, ax = plt.subplots(figsize=(7, 6))
-        sns.heatmap(
-            matriz,
-            annot=True,
-            fmt='.2f',
-            cmap='coolwarm',
-            center=0,
-            square=True,
-            linewidths=0.5,
-            ax=ax
-        )
-        ax.set_title('Matriz de correlaciones — variables numéricas\n'
-                     'Comercio Exterior México 1993–2025',
-                     fontsize=13, fontweight='bold')
-        plt.tight_layout()
-        ruta = os.path.join(self.ruta_reportes, 'eda_correlaciones.png')
-        plt.savefig(ruta, dpi=150, bbox_inches='tight')
-        plt.close()
-        print(f'✓ Matriz de correlaciones guardada en {ruta}')
-
-        print('\n  Correlaciones con VALOR_USD:')
-        for col in ['ANIO', 'MES_NUM', 'FLUJO_COD']:
-            print(f'  {col:<12}: {matriz.loc["VALOR_USD", col]:+.4f}')
+        """Matriz de correlaciones — implementada por Brenda."""
+        print('\n── [Brenda] Matriz de correlaciones — pendiente')
+        # TODO: Brenda implementa aquí
 
     # ──────────────────────────────────────────────────────────────────────────
-    # Gráficas categóricas (placeholder)
+    # BRENDA — Gráficas categóricas (placeholder)
     # ──────────────────────────────────────────────────────────────────────────
     def graficas_categoricas(self):
-        """Gráficas de barras categóricas"""
-        print('\n── Generando gráficas categóricas...')
-
-        fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-        fig.suptitle('Análisis categórico — Comercio Exterior México 1993–2025',
-                     fontsize=14, fontweight='bold')
-
-        # 1. Valor total por continente
-        por_continente = (self.df.groupby('CONTINENTE')['VALOR_USD']
-                          .sum()
-                          .sort_values(ascending=False))
-        axes[0].bar(por_continente.index, por_continente.values / 1e12,
-                    color='#5B9BD5', edgecolor='white', linewidth=0.5)
-        axes[0].set_title('Valor total por continente')
-        axes[0].set_xlabel('Continente')
-        axes[0].set_ylabel('Billones USD')
-        axes[0].tick_params(axis='x', rotation=30)
-        for i, v in enumerate(por_continente.values):
-            axes[0].text(i, v / 1e12 + 0.01, f'${v/1e12:.1f}T',
-                         ha='center', fontsize=9)
-
-        # 2. Valor total por tipo de flujo
-        por_flujo = (self.df.groupby('FLUJO')['VALOR_USD']
-                     .sum()
-                     .sort_values(ascending=False))
-        colores_flujo = ['#70AD47', '#ED7D31']
-        axes[1].bar(por_flujo.index, por_flujo.values / 1e12,
-                    color=colores_flujo, edgecolor='white', linewidth=0.5)
-        axes[1].set_title('Valor total por tipo de flujo')
-        axes[1].set_xlabel('Flujo')
-        axes[1].set_ylabel('Billones USD')
-        for i, v in enumerate(por_flujo.values):
-            axes[1].text(i, v / 1e12 + 0.01, f'${v/1e12:.1f}T',
-                         ha='center', fontsize=9)
-
-        plt.tight_layout()
-        ruta = os.path.join(self.ruta_reportes, 'eda_categoricas.png')
-        plt.savefig(ruta, dpi=150, bbox_inches='tight')
-        plt.close()
-        print(f'✓ Gráficas categóricas guardadas en {ruta}')
-
-        print('\n  Top 3 continentes por valor:')
-        for cont, val in por_continente.head(3).items():
-            print(f'  {cont:<20}: ${val/1e12:.2f}T USD')
+        """Gráficas de barras categóricas — implementadas por Brenda."""
+        print('\n── [Brenda] Gráficas categóricas — pendiente')
+        # TODO: Brenda implementa aquí
 
     # ──────────────────────────────────────────────────────────────────────────
     # MÉTODO PRINCIPAL
