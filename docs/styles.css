@@ -1,0 +1,113 @@
+/* ── Paleta UNAM ── */
+:root {
+  --unam-blue: #003865;
+  --unam-gold: #FFB400;
+  --unam-light: #e8f0f7;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--unam-blue) !important;
+}
+.navbar-brand, .nav-link {
+  color: #ffffff !important;
+}
+.nav-link:hover {
+  color: var(--unam-gold) !important;
+}
+
+/* Headings */
+h1, h2, h3 {
+  color: var(--unam-blue);
+}
+h1 {
+  border-bottom: 3px solid var(--unam-gold);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+h2 {
+  border-left: 5px solid var(--unam-gold);
+  padding-left: 0.6rem;
+  margin-top: 2rem;
+}
+
+/* Callout-like badges */
+.badge-result {
+  display: inline-block;
+  background: var(--unam-blue);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+/* Metric cards */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.metric-card {
+  background: var(--unam-light);
+  border-left: 4px solid var(--unam-blue);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  text-align: center;
+}
+.metric-card .value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--unam-blue);
+}
+.metric-card .label {
+  font-size: 0.8rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+thead th {
+  background-color: var(--unam-blue);
+  color: white;
+  padding: 8px 12px;
+  text-align: left;
+}
+tbody tr:nth-child(even) {
+  background-color: var(--unam-light);
+}
+td, th {
+  padding: 7px 12px;
+  border: 1px solid #dde;
+}
+
+/* Figure captions */
+figcaption {
+  color: #555;
+  font-size: 0.88em;
+  font-style: italic;
+  text-align: center;
+  margin-top: 0.3rem;
+}
+
+/* Callouts */
+.callout-note {
+  border-left-color: var(--unam-blue) !important;
+}
+.callout-tip {
+  border-left-color: var(--unam-gold) !important;
+}
+
+/* Footer strip */
+.page-footer {
+  background-color: var(--unam-blue);
+  color: #ccc;
+  font-size: 0.82em;
+}
