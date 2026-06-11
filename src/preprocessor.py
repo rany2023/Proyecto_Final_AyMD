@@ -3,9 +3,6 @@ preprocessor.py
 Preprocesamiento de datos para el modelo supervisado
 Comercio Exterior de México (1993–2025)
 Proyecto Final — Almacenes y Minería de Datos, Facultad de Ciencias UNAM
-
-Uso:
-    python src/preprocessor.py
 """
 
 import pandas as pd
@@ -35,7 +32,7 @@ class Preprocessor:
         - Guardar encoders y scaler para reutilización
     """
 
-    def __init__(self, ruta_datos: str = 'data/comercio_exterior_clean.csv',
+    def __init__(self, ruta_datos: str = 'data/comercio_exterior_enriquecido.csv',
                  ruta_modelos: str = 'models/'):
         self.ruta_datos   = ruta_datos
         self.ruta_modelos = ruta_modelos
@@ -114,6 +111,11 @@ class Preprocessor:
 
         df = self.df_modelo.copy()
 
+
+        # Agregamos TIPO_CAMBIO al df_modelo desde el dataset original
+        tc = self.df.groupby('PERIODO')['TIPO_CAMBIO'].mean().reset_index()
+        df = pd.merge(df, tc, on='PERIODO', how='left')
+
         # Codificación de variables categóricas
         df['CONTINENTE_ENC'] = self.le_continente.fit_transform(df['CONTINENTE'])
         df['PAIS_ENC']       = self.le_pais.fit_transform(df['PAIS'])
@@ -122,6 +124,7 @@ class Preprocessor:
         features = [
             'Exportaciones',
             'Importaciones',
+            'TIPO_CAMBIO',
             'CONTINENTE_ENC',
             'PAIS_ENC',
             'ANIO',
@@ -203,7 +206,7 @@ class Preprocessor:
 # ──────────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     prep = Preprocessor(
-        ruta_datos='data/comercio_exterior_clean.csv',
+        ruta_datos='data/comercio_exterior_enriquecido.csv',
         ruta_modelos='models/'
     )
     X_train, X_test, y_train, y_test = prep.ejecutar()

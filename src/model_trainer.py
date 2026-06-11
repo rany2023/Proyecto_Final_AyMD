@@ -3,9 +3,6 @@ model_trainer.py
 Entrenamiento y evaluación del modelo supervisado — Random Forest
 Comercio Exterior de México (1993–2025)
 Proyecto Final — Almacenes y Minería de Datos, Facultad de Ciencias UNAM
-
-Uso:
-    python src/model_trainer.py
 """
 
 import pandas as pd
@@ -212,7 +209,7 @@ class ModelTrainer:
 
     def _grafica_importancia(self):
         """Importancia de variables."""
-        features = ['Exportaciones', 'Importaciones', 'CONTINENTE_ENC',
+        features = ['Exportaciones', 'Importaciones', 'TIPO_CAMBIO', 'CONTINENTE_ENC',
                     'PAIS_ENC', 'ANIO', 'MES']
         importancias = self.mejor_modelo.feature_importances_
         indices = np.argsort(importancias)[::-1]
@@ -265,7 +262,7 @@ class ModelTrainer:
 if __name__ == '__main__':
     # Preprocesar datos
     prep = Preprocessor(
-        ruta_datos='data/comercio_exterior_clean.csv',
+        ruta_datos='data/comercio_exterior_enriquecido.csv',
         ruta_modelos='models/'
     )
     X_train, X_test, y_train, y_test = prep.ejecutar()

@@ -254,7 +254,7 @@ class ModelTrainerXGBoost:
 # ──────────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     prep = Preprocessor(
-        ruta_datos='data/comercio_exterior_enriquecido.csv',
+        ruta_datos='data/comercio_exterior_clean.csv',
         ruta_modelos='models/'
     )
     X_train, X_test, y_train, y_test = prep.ejecutar()

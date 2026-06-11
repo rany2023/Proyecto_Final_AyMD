@@ -3,9 +3,6 @@ eda_visualizaciones.py
 EDA Parte 2 — Histogramas, serie de tiempo y análisis categórico
 Comercio Exterior de México (1993–2025)
 Proyecto Final — Almacenes y Minería de Datos, Facultad de Ciencias UNAM
-
-Uso:
-    python src/eda_visualizaciones.py
 """
 
 import pandas as pd
@@ -32,11 +29,11 @@ class EDAVisualizaciones:
     Clase que encapsula las visualizaciones del EDA para el dataset
     de Comercio Exterior de México.
 
-    Responsabilidades (Rany):
+    Responsabilidades Irany:
         - Histogramas de variables numéricas
         - Serie de tiempo exportaciones vs importaciones 1993-2025
 
-    Responsabilidades (Brenda):
+    Responsabilidades Brenda:
         - Matriz de correlaciones + heatmap
         - Gráficas de barras por continente y tipo de flujo
     """
@@ -123,7 +120,7 @@ class EDAVisualizaciones:
               f'({(self.df["VALOR_USD"] == 0).mean()*100:.1f}%)')
 
     # ──────────────────────────────────────────────────────────────────────────
-    # RANY — Serie de tiempo
+    # Serie de tiempo
     # ──────────────────────────────────────────────────────────────────────────
     def serie_tiempo(self):
         """
@@ -199,7 +196,7 @@ class EDAVisualizaciones:
         print(f'  Balance promedio:    ${balance["BALANCE"].mean():,.0f} USD')
 
     # ──────────────────────────────────────────────────────────────────────────
-    # BRENDA — Matriz de correlaciones (placeholder)
+    # Matriz de correlaciones (placeholder)
     # ──────────────────────────────────────────────────────────────────────────
     def correlaciones(self):
         """Matriz de correlaciones — implementada por Brenda."""
